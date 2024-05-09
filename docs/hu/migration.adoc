@@ -1,4 +1,2 @@
 [#migration]
 = Migrációs leírások
-
-include::migration/migrationTo1_0_0.adoc[leveloffset=+1]

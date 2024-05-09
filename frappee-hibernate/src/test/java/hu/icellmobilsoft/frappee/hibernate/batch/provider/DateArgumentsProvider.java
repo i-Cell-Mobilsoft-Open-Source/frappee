@@ -37,7 +37,7 @@ import hu.icellmobilsoft.frappee.hibernate.batch.constants.TestBasicTypes;
  * {@link ArgumentsProvider} to providing {@link java.sql.Date} test cases for BatchService.
  *
  * @author csaba.balogh
- * @version 2.0.0
+ * @since 1.0.0
  */
 public class DateArgumentsProvider implements ArgumentsProvider {
 

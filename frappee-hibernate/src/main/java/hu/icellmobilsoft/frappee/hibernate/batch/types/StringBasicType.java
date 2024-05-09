@@ -28,7 +28,7 @@ import org.hibernate.type.internal.NamedBasicTypeImpl;
  * Class for wrap String as hibernate basic type.
  *
  * @author csaba.balogh
- * @since 2.0.0
+ * @since 1.0.0
  */
 public class StringBasicType extends NamedBasicTypeImpl<String> {
 

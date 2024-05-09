@@ -68,11 +68,11 @@ import hu.icellmobilsoft.frappee.hibernate.batch.provider.TimestampArgumentsProv
  * Class for testing {@link HibernateBatchService}.
  *
  * @author csaba.balogh
- * @since 1.12.0
+ * @since 1.0.0
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
-class BatchServiceTest {
+class HibernateBatchServiceTest {
 
     @Mock
     private AppLogger appLogger;

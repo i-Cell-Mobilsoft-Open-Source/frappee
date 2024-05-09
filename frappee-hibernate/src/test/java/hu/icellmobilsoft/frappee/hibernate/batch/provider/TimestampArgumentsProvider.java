@@ -44,7 +44,7 @@ import hu.icellmobilsoft.frappee.hibernate.batch.constants.TestBasicTypes;
  * {@link ArgumentsProvider} to providing {@link java.sql.Timestamp} test cases for BatchService.
  *
  * @author csaba.balogh
- * @since 2.0.0
+ * @since 1.0.0
  */
 public class TimestampArgumentsProvider implements ArgumentsProvider {
 

@@ -1,6 +1,6 @@
 /*-
  * #%L
- * Coffee
+ * Frappee
  * %%
  * Copyright (C) 2020 - 2023 i-Cell Mobilsoft Zrt.
  * %%

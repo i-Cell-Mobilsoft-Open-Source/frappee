@@ -1,0 +1,7 @@
+== Frapp:ee Dokumentáció
+
+A frapp:ee olyan coff:ee megoldások implementációs gyűjteménye, melyek építenek a JakartaEE specifikáció implementációira.
+A felépítése moduláris, és felülírható projekt szinten szinte minden. A keretrendszer a coff:ee egyes részeire és
+annak függőségeire épít, kiegészítve az alábbiakkal:
+
+* Hibernate

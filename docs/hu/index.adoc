@@ -1,0 +1,12 @@
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:imagesdir: pic
+
+[#index]
+include::project-description.adoc[leveloffset=-2]
+
+include::modules.adoc[]
+
+include::migration.adoc[]

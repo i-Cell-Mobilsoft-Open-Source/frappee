@@ -1,35 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>hu.icellmobilsoft.frappee</groupId>
-        <artifactId>frappee</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>hu.icellmobilsoft.frappee</groupId>
+		<artifactId>frappee</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>frappee-hibernate</artifactId>
-    <packaging>pom</packaging>
+	<artifactId>frappee-hibernate</artifactId>
+	<packaging>pom</packaging>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>hu.icellmobilsoft.frappee</groupId>
-                <artifactId>frappee-bom-all</artifactId>
-                <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-bom-all</artifactId>
+				<version>${project.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-    <modules>
-        <module>frappee-hibernate-util</module>
-        <module>frappee-hibernate-util-cdi</module>
-        <module>frappee-hibernate-batch</module>
-        <module>frappee-hibernate-batch-cdi</module>
-    </modules>
+	<modules>
+		<module>frappee-hibernate-util</module>
+		<module>frappee-hibernate-util-cdi</module>
+		<module>frappee-hibernate-batch</module>
+		<module>frappee-hibernate-batch-cdi</module>
+	</modules>
 
 </project>

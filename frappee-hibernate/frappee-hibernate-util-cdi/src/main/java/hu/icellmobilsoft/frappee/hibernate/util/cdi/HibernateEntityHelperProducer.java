@@ -19,15 +19,29 @@
  */
 package hu.icellmobilsoft.frappee.hibernate.util.cdi;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
 import jakarta.persistence.EntityManager;
 
 import hu.icellmobilsoft.frappee.hibernate.util.HibernateEntityHelper;
 
-@Dependent
+/**
+ * The default CDI producer of the {@link HibernateEntityHelper}.
+ * 
+ * @author attila-kiss-it
+ * @since 1.0.0
+ */
+@ApplicationScoped
 public class HibernateEntityHelperProducer {
 
+    /**
+     * The default producer method of the {@link HibernateEntityHelper}.
+     * 
+     * @param em
+     *            the {@link EntityManager}
+     * @return a new {@link HibernateEntityHelper} instance
+     */
     @Produces
     @Dependent
     public HibernateEntityHelper createHibernateBatchService(EntityManager em) {

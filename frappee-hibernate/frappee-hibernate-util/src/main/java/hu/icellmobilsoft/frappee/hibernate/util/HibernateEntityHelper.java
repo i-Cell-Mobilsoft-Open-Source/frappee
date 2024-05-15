@@ -37,7 +37,13 @@ public class HibernateEntityHelper {
     public static final int MAX_PARAMETER_COUNT = 1000;
 
     private final EntityManager em;
-    
+
+    /**
+     * Constructor.
+     * 
+     * @param em
+     *            the {@link EntityManager}
+     */
     public HibernateEntityHelper(EntityManager em) {
         this.em = em;
     }

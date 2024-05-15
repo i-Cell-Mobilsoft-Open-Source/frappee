@@ -14,9 +14,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>frappee-bom-all</module>
-        <module>frappee-bom-project</module>
+        <module>frappee-bom-jakarta</module>
         <module>frappee-bom-test</module>
+        <module>frappee-bom-project</module>
+        <module>frappee-bom-all</module>
     </modules>
 
 </project>

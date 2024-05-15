@@ -1,0 +1,95 @@
+[#samples_frappee-hibernate-samples]
+
+== Default HibernateBatchService implementáció felülírása CDI használatával
+
+Húzzuk be függésgnek a `frappee-hibernate-batch` modult abba a modulba, ahol a felülírást el szeretnénk végezni:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch</artifactId>
+</dependency>
+```
+
+Implementáljuk az egyedi logikát:
+
+IMPORTANT: Fontos, hogy az új implementációt dekoráljuk a kívánt scope-al (pl `@Dependent`). Szolgáljuk ki
+a `HibernateBatchService` ős osztályunk konstruktorát az új konstruktor `@Inject` annotációt alkalmazva.
+
+```
+@Dependent
+public class CustomHibernateBatchService extends HibernateBatchService {
+
+    private final EntityHelper entityHelper;
+
+    @Inject
+    public CustomHibernateBatchService(EntityHelper entityHelper, EntityManager em, HibernateEntityHelper hibernateEntityHelper) {
+        super(em, hibernateEntityHelper);
+        this.entityHelper = entityHelper;
+    }
+
+    ...
+
+}
+```
+
+A `HibernateEntityHelper` függőség kiszolgálásához húzzuk be függőségnek  a `frappee-hibernate-util-cdi` modult:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```
+
+== Default HibernateBatchServiceProducer felülírása CDI használatával
+
+Húzzuk be függésgnek a `frappee-hibernate-batch-cdi` modult abba a modulba, ahol a felülírást el szeretnénk végezni:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```
+
+Implementáljuk az egyedi logikát valamint a hozzá szükséges producert:
+
+IMPORTANT: Fontos, hogy az új implementáció producerét dekoráljuk a `@Specializes` annotációval.
+
+```
+public class CustomHibernateBatchService extends HibernateBatchService {
+
+    private final EntityHelper entityHelper;
+
+    public CustomHibernateBatchService(EntityHelper entityHelper, EntityManager em, HibernateEntityHelper hibernateEntityHelper) {
+        super(em, hibernateEntityHelper);
+        this.entityHelper = entityHelper;
+    }
+
+    ...
+
+}
+
+@ApplicationScoped
+@Specializes
+public class CustomHibernateBatchServiceProducer extends HibernateBatchServiceProducer {
+
+    @Produces
+    @Dependent
+    public HibernateBatchService createCustomHibernateBatchService(EntityHelper entityHelper, EntityManager em,
+            HibernateEntityHelper hibernateEntityHelper) {
+        return new CustomHibernateBatchService(entityHelper, em, hibernateEntityHelper);
+    }
+
+}
+```
+
+A `HibernateEntityHelper` függőség kiszolgálásához húzzuk be függőségnek  a `frappee-hibernate-util-cdi` modult:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```

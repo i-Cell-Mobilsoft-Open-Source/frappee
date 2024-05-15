@@ -1,17 +1,21 @@
 [#modules_frappee-hibernate]
 = frappee-hibernate
 
+The purpose of this module is to provide Hibernate specific services.
+
 IMPORTANT: Can be used from Wildfly 30.0.1.Final because it already contains Hibernate 6.2.13.Final.
 
-The purpose of this module is to implement the services of coffee-jpa based on Hibernate.
+== frappee-hibernate-batch
+
+The Hibernate specific implementation of the `frappee-jpa-batch-api` module.
 
 == HibernateBatchService [[HibernateBatchService]]
 
-The *HibernateBatchService* is a Hibernate specific implementation of the `hu.icellmobilsoft.coffee.jpa.sql.batch.IJpaBatchService` 
-interface of the coffee-jpa module It is used to perform bulk database operations (insert, update, delete) in a group. +
+The *HibernateBatchService* is a Hibernate specific implementation of the `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchService` 
+interface. It is used to perform bulk database operations (insert, update, delete) in a group. +
 It mainly contains batch operations based on *PreparedStatement*, in which SQL compilation is performed with the support of *Hibernate*.
 
-=== Type support
+==== Type support
 
 *HibernateBatchService* supports operations on the following types with certainty:
 
@@ -58,19 +62,19 @@ IMPORTANT: Types not listed here are handled by the specific *JDBC* driver.
 IMPORTANT: Type support has been tested on *postgresql* and *oracle* databases to ensure correct operation.
 For all other databases, type coverage is in theory mostly guaranteed, but anomalies may occur.
 
-=== Null value handling [[NullValue]]
+==== Null value handling [[NullValue]]
 
 *HibernateBatchService* starts type handling with a null scan.
 If the value of any type returned by hibernate is null, HibernateBatchService sets the value as *SqlTypes.NULL* JDBC type using the *PreparedStatement.setNull()* method.
 
 NOTE: *JDBC drivers* also use this method.
 
-=== CustomType handling [[CustomType]]
+==== CustomType handling [[CustomType]]
 
 *HibernateBatchService* currently does not handle any *CustomType* directly, but it provides the possibility to extend it.
 By default, all *CustomType* types are handled by the *JDBC driver* used!
 
-=== Enum types handling [[Enums]]
+==== Enum types handling [[Enums]]
 
 *HibernateBatchService* handles the resolution of *Enum* types as follows:
 
@@ -106,7 +110,7 @@ private EnumType enumString;
 | The name associated with the given non-value, the value is inserted according to the *name()* method.
 |===
 
-=== ManyToOneType handling [[ManyToOneType]]
+==== ManyToOneType handling [[ManyToOneType]]
 
 Within an entity, fields that use the *@ManyToOne* (jakarta.persistence.ManyToOne) annotation are treated by hibernate as *ManyToOneType*. +
 These *ManyToOneType* types are handled by *HibernateBatchService* as follows:
@@ -126,7 +130,7 @@ private SampleEntity manyToOneSampleEntity;
 | The *HibernateBatchService* takes the unique identifier of the given entity and injects it using *EntityHelper.getLazyId()*.
 |===
 
-=== ConvertedBasicType handling [[ConvertedBasicType]]
+==== ConvertedBasicType handling [[ConvertedBasicType]]
 
 Fields within an entity that have a converter, i.e. have the *@Convert* (jakarta.persistence.Convert) annotation placed on them, are treated by hibernate as *ConvertedBasicType*.
 
@@ -141,12 +145,12 @@ private YearMonth yearMonth;
 For this type, *Hibernate* contains the *JDBC* type and all additional settings for the converted value, but the conversion must be done manually.
 Thus, the *HibernateBatchService* calls the passed converter, and then passes it on to the link:#BasicType[BasicType] management process with the value obtained during the conversion and the *ConvertedBasicType* (BasicType) type set appropriately by hibernate.
 
-=== BasicType handling [[BasicType]]
+==== BasicType handling [[BasicType]]
 
 The *BasicType* type combines the java and jdbc types, so for each java type it contains the corresponding jdbc type.
 The separations are thus done according to the jdbc type code stored in the jdbc type.
 
-=== Date type BasicType handling [[DateBasicType]]
+==== Date type BasicType handling [[DateBasicType]]
 
 *SqlTypes.DATE* *BasicType* types with a jdbc type code *SqlTypes.DATE* are handled by *HibernateBatchService* as follows:
 
@@ -193,7 +197,7 @@ private Calendar calendarTemporalDate;
 
 IMPORTANT: Types not in the table are set by the *JDBC driver*.
 
-=== Time type BasicType handling [[TimeBasicType]]
+==== Time type BasicType handling [[TimeBasicType]]
 
 The *SqlTypes.TIME* and *SqlTypes.TIME_WITH_TIMEZONE* jdbc type code *BasicType* types are handled by *HibernateBatchService* as follows:
 
@@ -250,7 +254,7 @@ For the types listed in the table, if *hibernate.jdbc.time_zone* is set in *pers
 
 IMPORTANT: It is up to the *JDBC driver* to set the types not listed in the table.
 
-=== Timestamp type BasicType handling [[TimestampBasicType]]
+==== Timestamp type BasicType handling [[TimestampBasicType]]
 
 The *SqlTypes.TIMESTAMP*, *SqlTypes.TIMESTAMP_UTC* and *SqlTypes.TIMESTAMP_WITH_TIMEZONE* jdbc type code *BasicType* types are handled by *HibernateBatchService* as follows:
 
@@ -338,7 +342,7 @@ For the types listed in the table, if *hibernate.jdbc.time_zone* is set in *pers
 
 IMPORTANT: It is up to the *JDBC driver* to set the types not listed in the table.
 
-=== Boolean type BasicType handling [[BooleanBasicType]]
+==== Boolean type BasicType handling [[BooleanBasicType]]
 
 *BasicType* types with *SqlTypes.BOOLEAN* jdbc type code are handled by *HibernateBatchService* as follows:
 
@@ -367,7 +371,7 @@ private Boolean booleanWrapper;
 
 IMPORTANT: For types not listed in the table, it is up to the *JDBC driver* to set them.
 
-=== Char type BasicType handling [[CharBasicType]]
+==== Char type BasicType handling [[CharBasicType]]
 
 *BasicType* types with *SqlTypes.BOOLEAN* jdbc type code are handled by *HibernateBatchService* as follows:
 
@@ -396,7 +400,7 @@ private Character charWrapper;
 
 IMPORTANT: Types not listed in the table are set by the *JDBC driver*.
 
-=== Data type BasicType handling [[DataBasicType]]
+==== Data type BasicType handling [[DataBasicType]]
 
 The *SqlTypes.BLOB*, *SqlTypes.VARBINARY* and *SqlTypes.LONGVARBINARY* jdbc type code *BasicType* types are handled by *HibernateBatchService* as follows:
 
@@ -471,43 +475,3 @@ IMPORTANT: The *JDBC driver* is responsible for setting types not included in th
 NOTE: To enable legacy array handling, `persistence.xml` needs to be extended with the following property: `<property
 name="hibernate.type.wrapper_array_handling" value="legacy"/>`. See more: 
 https://github.com/hibernate/hibernate-orm/blob/6.2/migration-guide.adoc#bytecharacter-mapping-changes[hibernate 6.2 migration guide]
-
-=== Overriging the default implementation
-
-Add the `frappee:hibernate` dependency to the module where the custom implemtation is:
-
-```
-<dependency>
-    <groupId>hu.icellmobilsoft.frappee</groupId>
-    <artifactId>frappee-hibernate</artifactId>
-</dependency>
-```
-
-Implement the custom logic:
-
-IMPORTANT: It is important to declare the required scope (e.g. `@Dependent`) and apply the `@Alternative`
-annotation!
-
-```
-@Dependent
-@Alternative
-public class CustomHibernateBatchService extends HibernateBatchService {
-    ...
-}
-```
-
-Declare the alternative implementation in the `beans.xml` of the module of the implementation:
-
-```
-<alternatives>
-    <class>...CustomHibernateBatchService</class>
-</alternatives>
-```
-
-Define the alternative implementation that must be used at all of the injection points in the `beans.xml˙ of the microservice (war):
-
-```
-<alternatives>
-    <class>...CustomHibernateBatchService</class>
-</alternatives>
-```

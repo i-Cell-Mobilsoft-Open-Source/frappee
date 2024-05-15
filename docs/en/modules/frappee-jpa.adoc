@@ -1,0 +1,10 @@
+[#modules_frappee-jpa]
+= frappee-jpa
+
+Collection of JPA specific solutions.
+
+== frappee-jpa-batch-api
+
+Tha API of JPA specific batch services:
+
+* `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchService`

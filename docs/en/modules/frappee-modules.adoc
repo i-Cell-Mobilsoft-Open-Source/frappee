@@ -1,4 +1,0 @@
-[#frappee-modules]
-= Frapp:ee modules
-
-include::frappee-hibernate.adoc[leveloffset=+1]

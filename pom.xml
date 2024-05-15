@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -22,12 +23,15 @@
 	<properties>
 		<project.scm.id>icell-github-server</project.scm.id>
 		<sonar.junit.reportPaths>${surefire.reportsDir}, ${failsafe.reportsDir}</sonar.junit.reportPaths>
-		<sonar.jacoco.reportPaths>${jacoco.ut.execution.data.file}, ${jacoco.it.execution.data.file}</sonar.jacoco.reportPaths>
+		<sonar.jacoco.reportPaths>${jacoco.ut.execution.data.file},
+			${jacoco.it.execution.data.file}</sonar.jacoco.reportPaths>
 	</properties>
 
 	<scm>
-		<connection>scm:git:git@github.com:i-Cell-Mobilsoft-Open-Source/frappee.git</connection>
-		<developerConnection>scm:git:git@github.com:i-Cell-Mobilsoft-Open-Source/frappee.git</developerConnection>
+		<connection>
+			scm:git:git@github.com:i-Cell-Mobilsoft-Open-Source/frappee.git</connection>
+		<developerConnection>
+			scm:git:git@github.com:i-Cell-Mobilsoft-Open-Source/frappee.git</developerConnection>
 		<url>https://github.com/i-Cell-Mobilsoft-Open-Source/frappee</url>
 		<tag>HEAD</tag>
 	</scm>
@@ -117,7 +121,8 @@
 							<configuration>
 								<fileSets>
 									<fileSet>
-										<directory>${project.build.directory}/classes</directory>
+										<directory>
+											${project.build.directory}/classes</directory>
 									</fileSet>
 								</fileSets>
 								<processDefaultFileSet>false</processDefaultFileSet>
@@ -165,6 +170,7 @@
 
 	<modules>
 		<module>frappee-bom</module>
+		<module>frappee-jpa</module>
 		<module>frappee-hibernate</module>
 	</modules>
 

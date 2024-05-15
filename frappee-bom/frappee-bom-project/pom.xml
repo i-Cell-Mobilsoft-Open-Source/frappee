@@ -19,7 +19,29 @@
 			<!-- Frappee JPA -->
 			<dependency>
 				<groupId>hu.icellmobilsoft.frappee</groupId>
-				<artifactId>frappee-hibernate</artifactId>
+				<artifactId>frappee-jpa-batch-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-hibernate-util</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-hibernate-util-cdi</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-hibernate-batch</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-hibernate-batch-cdi</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 

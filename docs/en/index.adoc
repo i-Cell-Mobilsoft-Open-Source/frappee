@@ -5,8 +5,10 @@
 :imagesdir: pic
 
 [#index]
-include::project-description.adoc[leveloffset=-2]
+include::project-description.adoc[leveloffset=+1]
 
 include::modules.adoc[]
 
-include::migration.adoc[]
+include::samples.adoc[leveloffset=+1]
+
+include::migration.adoc[leveloffset=+1]

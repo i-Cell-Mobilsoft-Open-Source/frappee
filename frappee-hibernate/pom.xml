@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>frappee-hibernate</artifactId>
+    <packaging>pom</packaging>
 
     <dependencyManagement>
         <dependencies>
@@ -24,22 +25,11 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>hu.icellmobilsoft.coffee</groupId>
-            <artifactId>coffee-jpa</artifactId>
-        </dependency>
-
-        <!--Test dependecies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>frappee-hibernate-util</module>
+        <module>frappee-hibernate-util-cdi</module>
+        <module>frappee-hibernate-batch</module>
+        <module>frappee-hibernate-batch-cdi</module>
+    </modules>
 
 </project>

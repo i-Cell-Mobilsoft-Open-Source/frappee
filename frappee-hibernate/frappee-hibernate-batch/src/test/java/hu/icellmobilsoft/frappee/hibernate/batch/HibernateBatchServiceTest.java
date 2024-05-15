@@ -49,6 +49,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -153,7 +154,7 @@ class HibernateBatchServiceTest {
 
         // then
         ArgumentCaptor<Calendar> calendarArgumentCaptor = ArgumentCaptor.forClass(Calendar.class);
-        Mockito.verify(preparedStatement).setTime(Mockito.eq(0), Mockito.eq(expectedTimeWithTimeZone), calendarArgumentCaptor.capture());
+        Mockito.verify(preparedStatement).setTime(ArgumentMatchers.eq(0), ArgumentMatchers.eq(expectedTimeWithTimeZone), calendarArgumentCaptor.capture());
     }
 
     @Order(6)
@@ -183,7 +184,7 @@ class HibernateBatchServiceTest {
 
         // then
         ArgumentCaptor<Calendar> calendarArgumentCaptor = ArgumentCaptor.forClass(Calendar.class);
-        Mockito.verify(preparedStatement).setTimestamp(Mockito.eq(0), Mockito.eq(expectedTimestampWithTimeZone), calendarArgumentCaptor.capture());
+        Mockito.verify(preparedStatement).setTimestamp(ArgumentMatchers.eq(0), ArgumentMatchers.eq(expectedTimestampWithTimeZone), calendarArgumentCaptor.capture());
     }
 
     @Order(8)
@@ -237,7 +238,7 @@ class HibernateBatchServiceTest {
         // then
         if (value instanceof Blob) {
             ArgumentCaptor<ByteArrayInputStream> byteArrayInputStreamArgumentCaptor = ArgumentCaptor.forClass(ByteArrayInputStream.class);
-            Mockito.verify(preparedStatement).setBinaryStream(Mockito.eq(0), byteArrayInputStreamArgumentCaptor.capture());
+            Mockito.verify(preparedStatement).setBinaryStream(ArgumentMatchers.eq(0), byteArrayInputStreamArgumentCaptor.capture());
 
             byte[] expectedByteArray = ((ByteArrayInputStream) expectedValue).readAllBytes();
             byte[] actualByteArray = byteArrayInputStreamArgumentCaptor.getValue().readAllBytes();

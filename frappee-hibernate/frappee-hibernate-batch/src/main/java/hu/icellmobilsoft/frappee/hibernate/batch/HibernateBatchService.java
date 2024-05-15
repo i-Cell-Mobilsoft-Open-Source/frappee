@@ -95,7 +95,7 @@ public class HibernateBatchService implements IJpaBatchService {
     private static final Logger LOGGER = Logger.getLogger(HibernateBatchService.class);
 
     private final EntityManager em;
-    
+
     private final HibernateEntityHelper hibernateEntityHelper;
 
     private String sqlPostfix;

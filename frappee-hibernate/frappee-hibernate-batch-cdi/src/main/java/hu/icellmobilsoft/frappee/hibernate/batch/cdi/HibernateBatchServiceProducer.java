@@ -37,6 +37,13 @@ import hu.icellmobilsoft.frappee.hibernate.util.HibernateEntityHelper;
 public class HibernateBatchServiceProducer {
 
     /**
+     * Default constructor.
+     */
+    public HibernateBatchServiceProducer() {
+        super();
+    }
+
+    /**
      * The default producer method of the {@link HibernateBatchService}.
      *
      * @param em

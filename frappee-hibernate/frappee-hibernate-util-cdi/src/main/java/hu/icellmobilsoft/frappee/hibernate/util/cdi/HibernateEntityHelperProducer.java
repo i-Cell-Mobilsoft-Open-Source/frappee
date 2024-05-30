@@ -36,6 +36,13 @@ import hu.icellmobilsoft.frappee.hibernate.util.HibernateEntityHelper;
 public class HibernateEntityHelperProducer {
 
     /**
+     * Default constructor.
+     */
+    public HibernateEntityHelperProducer() {
+        super();
+    }
+
+    /**
      * The default producer method of the {@link HibernateEntityHelper}.
      *
      * @param em

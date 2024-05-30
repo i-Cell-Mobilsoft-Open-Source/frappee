@@ -102,6 +102,12 @@ public class HibernateBatchService implements IJpaBatchService {
 
     private TimeZone dbTimeZone;
 
+    /**
+     * Konstruktor.
+     * 
+     * @param em {@link EntityManager}
+     * @param hibernateEntityHelper {@link HibernateEntityHelper}
+     */
     public HibernateBatchService(EntityManager em, HibernateEntityHelper hibernateEntityHelper) {
         super();
         this.em = em;

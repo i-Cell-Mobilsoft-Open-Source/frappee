@@ -1,0 +1,4 @@
+= Frapp:ee Dokumentáció
+
+A frapp:ee ORM megoldások implementációs gyűjteménye. A felépítése moduláris, és felülírható projekt
+szinten szinte minden. A keretrendszer a coffee-se moduljaira épít.

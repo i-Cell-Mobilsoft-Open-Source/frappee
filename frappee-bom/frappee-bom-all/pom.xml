@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>hu.icellmobilsoft.frappee</groupId>
+		<artifactId>frappee-bom</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>frappee-bom-all</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+		<version.hu.icellmobilsoft.coffee>2.8.0-SNAPSHOT</version.hu.icellmobilsoft.coffee>
+		<version.org.hibernate>6.2.13.Final</version.org.hibernate> <!-- Wildfly
+		30.0.1 -->
+		<version.org.apache.commons.commons-lang3>3.12.0</version.org.apache.commons.commons-lang3>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Project -->
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-bom-project</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-bom-jakarta</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-bom-test</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Coffee -->
+			<dependency>
+				<groupId>hu.icellmobilsoft.coffee</groupId>
+				<artifactId>coffee-bom-project</artifactId>
+				<version>${version.hu.icellmobilsoft.coffee}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Hibernate -->
+			<dependency>
+				<groupId>org.hibernate.orm</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>${version.org.hibernate}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- Utils -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${version.org.apache.commons.commons-lang3}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+</project>

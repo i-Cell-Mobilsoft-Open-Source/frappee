@@ -1,0 +1,95 @@
+[#samples_frappee-hibernate-samples]
+
+== Overriding the default HibernateBatchService implementation using CDI
+
+Add the `frappee-hibernate-batch` dependency to the module where the custom implemtation is:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch</artifactId>
+</dependency>
+```
+
+Implement the custom logic:
+
+IMPORTANT: It is important to declare the required scope (e.g. `@Dependent`). Invoke the super constructor
+of the `HibernateBatchService` and apply the `@Inject` annotation on the new constructor.
+
+```
+@Dependent
+public class CustomHibernateBatchService extends HibernateBatchService {
+
+    private final EntityHelper entityHelper;
+
+    @Inject
+    public CustomHibernateBatchService(EntityHelper entityHelper, EntityManager em, HibernateEntityHelper hibernateEntityHelper) {
+        super(em, hibernateEntityHelper);
+        this.entityHelper = entityHelper;
+    }
+
+    ...
+
+}
+```
+
+The provide the `HibernateEntityHelper` instance use the `frappee-hibernate-util-cdi` dependency:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```
+
+== Overrigin the default HibernateBatchServiceProducer implementation using CDI
+
+Add the `frappee-hibernate-batch-cdi` dependency to the module where the custom implemtation is:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```
+
+Implement the custom logic and the new producer:
+
+IMPORTANT: It is important to decorate the new producer with the `@Specializes` annotation.
+
+```
+public class CustomHibernateBatchService extends HibernateBatchService {
+
+    private final EntityHelper entityHelper;
+
+    public CustomHibernateBatchService(EntityHelper entityHelper, EntityManager em, HibernateEntityHelper hibernateEntityHelper) {
+        super(em, hibernateEntityHelper);
+        this.entityHelper = entityHelper;
+    }
+
+    ...
+
+}
+
+@ApplicationScoped
+@Specializes
+public class CustomHibernateBatchServiceProducer extends HibernateBatchServiceProducer {
+
+    @Produces
+    @Dependent
+    public HibernateBatchService createCustomHibernateBatchService(EntityHelper entityHelper, EntityManager em,
+            HibernateEntityHelper hibernateEntityHelper) {
+        return new CustomHibernateBatchService(entityHelper, em, hibernateEntityHelper);
+    }
+
+}
+```
+
+The provide the `HibernateEntityHelper` instance use the `frappee-hibernate-util-cdi` dependency:
+
+```
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-hibernate-batch-cdi</artifactId>
+</dependency>
+```

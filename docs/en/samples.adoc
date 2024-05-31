@@ -1,0 +1,5 @@
+[#samples]
+
+= Samples
+
+include::samples/frappee-hibernate-samples.adoc[]

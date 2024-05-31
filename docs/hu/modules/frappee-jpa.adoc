@@ -1,0 +1,10 @@
+[#modules_frappee-jpa]
+= frappee-jpa
+
+JPA sepcifikus megoldások gyűjteménye.
+
+== frappee-jpa-batch-api
+
+JPA specifikus batch szolgáltatások API-ja:
+
+* `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchService`

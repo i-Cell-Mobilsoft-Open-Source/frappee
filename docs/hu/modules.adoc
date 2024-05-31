@@ -1,0 +1,4 @@
+[#modules]
+
+include::modules/frappee-jpa.adoc[leveloffset=+1]
+include::modules/frappee-hibernate.adoc[leveloffset=+1]

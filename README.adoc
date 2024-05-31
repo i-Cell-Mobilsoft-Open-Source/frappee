@@ -1,0 +1,90 @@
+= frapp:ee
+
+image:https://github.com/i-Cell-Mobilsoft-Open-Source/frappee/actions/workflows/compile_maven.yml/badge.svg?style=plastic&branch=master[GitHub Compile workflow status in master branch]
+image:https://img.shields.io/maven-central/v/hu.icellmobilsoft.frappee/frappee?logo=apache-maven&style=for-the-badge)[Maven central version of Parent pom project]
+image:https://img.shields.io/github/license/i-Cell-Mobilsoft-Open-Source/frappee?style=plastic&logo=apache[License of Parent pom project]
+image:https://img.shields.io/badge/Use JakartaEE-project-brightgreen.svg?style=plastic&logo=jakartaee[Use JakartaEE project]
+
+<<readme-hu,Hungarian version>> 
+
+:sectnums!:
+[[readme-en]]
+== Frapp:ee Documentation
+
+Frapp:ee is a collection of ORM solutions. Its structure is modular, and almost everything can be 
+overridden at the project level. The framework is based on coffee-ee modules.
+
+== Maven central
+Frapp:ee can also be found in the official maven repository as well, 
+it is enough to reference necessary BOM objects in the project which handles each sub-modules automatically:
+
+.dependencyManagement settings
+[source, xml]
+----
+<dependencyManagement>
+    <dependency>
+        <groupId>hu.icellmobilsoft.frappee</groupId>
+        <artifactId>frappee-bom-project</artifactId>
+        <version>${version.hu.icellmobilsoft.frappee}</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+</dependencyManagement>
+----
+
+.usase of modules
+[source, xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>hu.icellmobilsoft.frappee</groupId>
+        <artifactId>frappee-hibernate-batch</artifactId>
+    </dependency>
+    ...other frapp:ee modules...
+</dependencies>
+----
+
+For more detailed documentation please see: http://i-cell-mobilsoft-open-source.github.io/frappee[frapp:ee documentation]
+
+Copyright (C) 2020 i-Cell Mobilsoft Zrt.
+
+[[readme-hu]]
+:sectnums:
+== Frapp:ee Dokumentáció
+
+A frapp:ee ORM megoldások implementációs gyűjteménye. A felépítése moduláris, és felülírható projekt
+szinten szinte minden. A keretrendszer a coffee-se moduljaira épít.
+
+== Maven central
+A frapp:ee megtalálható az official maven repository-ban is,
+a projekten elég behúzni a BOM-ot mely minden almodult lekezel:
+
+.dependencyManagement beállítások
+[source, xml]
+----
+<dependencyManagement>
+    <dependency>
+        <groupId>hu.icellmobilsoft.frappee</groupId>
+        <artifactId>frappee-bom-project</artifactId>
+        <version>${version.hu.icellmobilsoft.frappee}</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+</dependencyManagement>
+----
+
+.modulok használata
+[source, xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>hu.icellmobilsoft.frappee</groupId>
+        <artifactId>frappee-hibernate-batch</artifactId>
+    </dependency>
+    ...egyéb frappee:ee modulok...
+</dependencies>
+----
+
+Bővebb leírás a http://i-cell-mobilsoft-open-source.github.io/frappee[frapp:ee dokumentáció] oldalon található.
+
+Copyright (C) 2020 i-Cell Mobilsoft Zrt.

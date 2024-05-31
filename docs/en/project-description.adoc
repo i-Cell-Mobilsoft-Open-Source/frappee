@@ -1,0 +1,4 @@
+== Frapp:ee Documentation
+
+Frapp:ee is a collection of ORM solutions. Its structure is modular, and almost everything can be 
+overridden at the project level. The framework is based on coffee-ee modules.

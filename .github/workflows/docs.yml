@@ -3,19 +3,19 @@ name: Deploy documentation
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch [master]
+      - name: Checkout branch [main]
         uses: actions/checkout@v3
         with:
-          ref: master
-      - name: Push [master] to [gh-pages]
+          ref: main
+      - name: Push [main] to [gh-pages]
         shell: bash
-        run: git push origin master:gh-pages --force
+        run: git push origin main:gh-pages --force
       - name: Checkout [gh-pages]
         uses: actions/checkout@v3
         with:

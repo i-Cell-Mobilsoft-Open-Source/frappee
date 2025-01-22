@@ -1,0 +1,5 @@
+= v2.0.0
+
+.Changes compared to previous version
+
+* WildFly 34 támogatása új Hibernate verzióval: `6.2.13.Final` to `6.6.1.Final`

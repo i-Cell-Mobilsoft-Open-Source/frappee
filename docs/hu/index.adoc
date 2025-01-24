@@ -12,3 +12,5 @@ include::modules.adoc[]
 include::samples.adoc[leveloffset=+1]
 
 include::migration.adoc[leveloffset=+1]
+
+include::release-notes/v2.0.0.adoc[leveloffset=+1]

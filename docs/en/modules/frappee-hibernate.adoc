@@ -3,7 +3,8 @@
 
 The purpose of this module is to provide Hibernate specific services.
 
-IMPORTANT: Can be used from Wildfly 30.0.1.Final because it already contains Hibernate 6.2.13.Final.
+IMPORTANT: Can be used from Wildfly 30.0.1.Final and 34.0.1.Final because it already contains Hibernate 6+. Check release notes for specific version support.
+
 
 == frappee-hibernate-batch
 

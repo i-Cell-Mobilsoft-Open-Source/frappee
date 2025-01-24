@@ -741,6 +741,18 @@ public class HibernateBatchService implements IJpaBatchService {
         case SqlTypes.LONGVARBINARY:
             setBinaryPsObject(ps, parameterIndex, value);
             break;
+        case SqlTypes.TINYINT:
+            if (value instanceof Enum) {
+                Enum<?> v = (Enum<?>) value;
+                ps.setInt(parameterIndex, v.ordinal());
+            }
+            if (value instanceof Byte) {
+                ps.setByte(parameterIndex, (Byte) value);
+            }
+            break;
+        case SqlTypes.VARCHAR:
+            ps.setString(parameterIndex, String.valueOf(value));
+            break;
         default:
             ps.setObject(parameterIndex, value);
         }

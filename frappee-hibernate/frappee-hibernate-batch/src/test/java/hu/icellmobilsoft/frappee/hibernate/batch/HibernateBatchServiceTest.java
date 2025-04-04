@@ -288,7 +288,7 @@ class HibernateBatchServiceTest {
         batchService.setPsObject(preparedStatement, 0, convertedBasicTypeMock, yearMonth);
 
         // then
-        Mockito.verify(preparedStatement).setObject(0, yearMonthString);
+        Mockito.verify(preparedStatement).setString(0, yearMonthString);
     }
 
     private void mockDbTimeZone() {

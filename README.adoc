@@ -14,6 +14,20 @@ image:https://img.shields.io/badge/Use JakartaEE-project-brightgreen.svg?style=p
 Frapp:ee is a collection of ORM solutions. Its structure is modular, and almost everything can be 
 overridden at the project level. The framework is based on coffee-ee modules.
 
+=== Hibernate compatibility matrix
+
+
+|===
+|Frapp:ee version |Hibernate version
+
+|Frapp:ee 1.x
+|https://hibernate.org/orm/documentation/6.2/[Hibernate 6.2]
+
+|Frapp:ee 2.x
+|https://hibernate.org/orm/documentation/6.6/[Hibernate 6.6]
+
+|===
+
 == Maven central
 Frapp:ee can also be found in the official maven repository as well, 
 it is enough to reference necessary BOM objects in the project which handles each sub-modules automatically:

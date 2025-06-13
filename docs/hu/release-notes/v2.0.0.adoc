@@ -5,3 +5,4 @@
 * Minimum JAVA verzió 11-ről 17-re változott
 * WildFly 34 támogatása új Hibernate verzióval: `6.2.13.Final` -> `6.6.1.Final`
 * Coffee upgrade `2.8.0` -> `2.11.0`
+* Angol, magyar, német nyelvesítés hozzáadása a `HibernateBatchFaultType` enum értékeinek, bővebben <<HibernateBatchServiceExceptionHandling, itt>>.}

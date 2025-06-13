@@ -10,11 +10,18 @@ IMPORTANT: Can be used from Wildfly 30.0.1.Final and 34.0.1.Final because it alr
 
 The Hibernate specific implementation of the `frappee-jpa-batch-api` module.
 
-== HibernateBatchService [[HibernateBatchService]]
+=== HibernateBatchService [[HibernateBatchService]]
 
 The *HibernateBatchService* is a Hibernate specific implementation of the `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchService` 
 interface. It is used to perform bulk database operations (insert, update, delete) in a group. +
 It mainly contains batch operations based on *PreparedStatement*, in which SQL compilation is performed with the support of *Hibernate*.
+
+==== Exception handling [[HibernateBatchServiceExceptionHandling]]
+
+In case of an error, *HibernateBatchService* throws a `TechnicalException`, which can provide the values of the `HibernateBatchFaultType` enum as fault types.
+For the fault types, localized error messages can be found in the `i18n.frappee-messages` resource bundle in the `frappee-hibernate-batch` module, which can be integrated into the localization solution used.
+
+NOTE: For example, when using `coffee-module-localization`, you can specify the configuration `coffee.config.resource.bundles=i18n.frappee-messages`
 
 ==== Type support
 

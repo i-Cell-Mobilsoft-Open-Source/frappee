@@ -15,6 +15,13 @@ A *HibernateBatchService* a `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchServic
 implementációsja. Tömeges adatbázis műveletek (insert, update, delete) csoportosan való végrehajtására szolgál. +
 Főként *PreparedStatement* alapon működő batch műveleteket tartalmaz, amelyekben az SQL összeállítást a *Hibernate* támogatásával végezzük el.
 
+==== Hibakezelés [[HibernateBatchServiceExceptionHandling]]}
+
+Hiba esetén a *HibernateBatchService* a `TechnicalException`-t dob, amely fault-typeként a `HibernateBatchFaultType` enum értékeit adhatja.
+A fault type-okhoz a `frappee-hibernate-batch` modulban az `i18n.frappee-messages` resource bundle-ben találhatóak a nyelvesített hibaüzenetek, ezeket lehet integrálni a használt lokalizációs megoldásba.
+
+NOTE: Például `coffee-module-localization` használata esetén a `coffee.config.resource.bundles=i18n.frappee-messages` konfiguráció megadásával
+
 ==== Típus támogatás
 
 A *HibernateBatchService* a következő típusokkal kapcsolatos műveleteket támogatja biztosan:

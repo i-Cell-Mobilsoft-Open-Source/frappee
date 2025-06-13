@@ -4,3 +4,4 @@
 
 * The required JAVA version has been changed to 17
 * Support WildFly 34 with new Hibernate version from `6.2.13.Final` to `6.6.1.Final`
+* Coffee upgrade `2.8.0` -> `2.11.0`

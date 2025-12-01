@@ -44,6 +44,12 @@
 				<version>${project.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-repserv-hibernate</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

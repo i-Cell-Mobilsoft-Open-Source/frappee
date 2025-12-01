@@ -1,0 +1,25 @@
+[#modules_frappee-repserv]
+= frappee-repserv
+
+The purpose of this module is to provide implementations for using `hu.icellmobilsoft.coffee.module.repserv.api.SqlContext` in database-side queries.
+
+== frappee-repserv-hibernate
+
+With a Hibernate-specific `org.hibernate.resource.jdbc.spi.StatementInspector` implementation, it appends the ID stored in the CDI request-scope `hu.icellmobilsoft.coffee.module.repserv.api.SqlContext` as a comment at the beginning of every query.
+
+=== Usage:
+
+Add the following dependency to your `pom.xml`:
+[source,xml]
+----
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-repserv</artifactId>
+</dependency>
+----
+
+Set this property in your `persistence.xml`:
+[source,xml]
+----
+<property name="hibernate.session_factory.statement_inspector" value="hu.icellmobilsoft.frappee.repserv.hibernate.SqlContextInspector"/>
+----

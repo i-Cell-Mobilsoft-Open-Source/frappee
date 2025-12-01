@@ -1,0 +1,25 @@
+[#modules_frappee-repserv]
+= frappee-repserv
+
+A modul célja implementációk szolgáltatása a `hu.icellmobilsoft.coffee.module.repserv.api.SqlContext` adatbázis oldali lekérdezésekben való felhasználására.
+
+== frappee-repserv-hibernate
+
+Hibernate specifikus `org.hibernate.resource.jdbc.spi.StatementInspector` implementációval egy commentben minden lekérdezés elejére fűzi a CDI request scope-ban lévő `hu.icellmobilsoft.coffee.module.repserv.api.SqlContext`-ben tárolt ID-t.
+
+=== Usage:
+
+Használatához az alábbi függőséget kell hozzáadni a `pom.xml`-hez:
+[source,xml]
+----
+<dependency>
+    <groupId>hu.icellmobilsoft.frappee</groupId>
+    <artifactId>frappee-repserv</artifactId>
+</dependency>
+----
+
+A `persistence.xml`-ben az alábbi property beállítása szükséges:
+[source,xml]
+----
+<property name="hibernate.session_factory.statement_inspector" value="hu.icellmobilsoft.frappee.repserv.hibernate.SqlContextInspector"/>
+----

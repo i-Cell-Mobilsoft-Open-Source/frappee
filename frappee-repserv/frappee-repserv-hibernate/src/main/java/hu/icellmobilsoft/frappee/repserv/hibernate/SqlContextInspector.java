@@ -62,6 +62,7 @@ public class SqlContextInspector implements StatementInspector {
         Optional<String> optId = getSqlContext().map(SqlContext::getId);
 
         if (optId.isPresent()) {
+            // replace comment open/close tags to avoid sql injection in case of manual usage
             String id = optId.get().replace("/*", "").replace("*/", "");
 
             return "/* SQLId: " + id + " */ " + sql;
@@ -71,9 +72,9 @@ public class SqlContextInspector implements StatementInspector {
     }
 
     private Optional<SqlContext> getSqlContext() {
-        if (sqlContext != null) {
-            return Optional.of(sqlContext);
+        if (sqlContext == null) {
+            sqlContext = CDI.current().select(SqlContext.class).stream().findFirst().orElse(null);
         }
-        return CDI.current().select(SqlContext.class).stream().findFirst();
+        return Optional.ofNullable(sqlContext);
     }
 }

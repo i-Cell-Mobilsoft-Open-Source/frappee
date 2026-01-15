@@ -1,0 +1,8 @@
+= v2.1.0
+
+.Changes compared to previous version
+
+* Wildfly 38.0.1.Final support with the following version updates:
+** Hibernate: `6.6.1.Final` -> `6.6.31.Final`
+** Apache Commons Lang3 `3.12.0` -> `3.18.0`
+** Coffee: `2.11.0` -> `2.13.0`

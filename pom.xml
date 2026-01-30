@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>hu.icellmobilsoft.pom</groupId>
 		<artifactId>parent-oss-pom</artifactId>
-		<version>1.4.0</version>
+		<version>1.5.0</version>
 	</parent>
 
 	<groupId>hu.icellmobilsoft.frappee</groupId>
@@ -14,7 +14,8 @@
 
 	<packaging>pom</packaging>
 
-	<description>Frapp:EE</description>
+	<name>Frapp:EE</name>
+	<description>Frapp:EE is a collection of ORM solutions</description>
 	<url>https://github.com/i-Cell-Mobilsoft-Open-Source/frappee</url>
 	<inceptionYear>2024</inceptionYear>
 
@@ -172,28 +173,17 @@
 		<module>frappee-hibernate</module>
 	</modules>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
-
 	<repositories>
 		<repository>
 			<releases>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<id>ossrh</id>
-			<name>Internal Release Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>central-snapshots</id>
+			<name>Maven Central Snapshots Repository</name>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
 		</repository>
 		<repository>
 			<releases>
@@ -203,8 +193,8 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-			<id>central</id>
-			<name>Central Repository</name>
+			<id>central-releases</id>
+			<name>Maven Central Releases Repository</name>
 			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 	</repositories>

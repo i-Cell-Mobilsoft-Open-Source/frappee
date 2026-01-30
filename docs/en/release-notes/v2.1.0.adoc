@@ -6,3 +6,5 @@
 ** Hibernate: `6.6.1.Final` -> `6.6.31.Final`
 ** Apache Commons Lang3 `3.12.0` -> `3.18.0`
 ** Coffee: `2.11.0` -> `2.13.0`
+* OSS Sonatype -> Maven Central repository migration
+** `parent-oss-pom` upgrade *1.4.0 -> 1.5.0*

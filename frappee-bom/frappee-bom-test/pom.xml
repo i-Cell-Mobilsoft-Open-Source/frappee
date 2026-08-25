@@ -16,6 +16,8 @@
 		<version.junit.jupiter>5.9.1</version.junit.jupiter>
 		<version.org.jboss.weld.weld-junit5>4.0.0.Final</version.org.jboss.weld.weld-junit5>
 		<version.org.mockito>4.9.0</version.org.mockito>
+		<version.org.hibernate.validator>8.0.0.Final</version.org.hibernate.validator>
+		<version.commons-logging>1.2</version.commons-logging>
 	</properties>
 
 	<dependencyManagement>
@@ -45,6 +47,22 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${version.org.mockito}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- We use hibernate-validator reference implementation for bean validation
+                on junit test cases -->
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${version.org.hibernate.validator}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>${version.commons-logging}</version>
 				<scope>test</scope>
 			</dependency>
 

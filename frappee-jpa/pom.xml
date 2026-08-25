@@ -25,6 +25,7 @@
 
 	<modules>
 		<module>frappee-jpa-batch-api</module>
-	</modules>
+        <module>frappee-jpa-util</module>
+    </modules>
 
 </project>

@@ -15,6 +15,7 @@
 	<properties>
 		<version.jakarta.enterprise.cdi-api>4.0.1</version.jakarta.enterprise.cdi-api>
 		<version.jakarta.persistence-api>3.1.0</version.jakarta.persistence-api>
+		<version.jakartaee>10.0.0</version.jakartaee>
 	</properties>
 
 	<dependencyManagement>
@@ -31,6 +32,13 @@
 				<groupId>jakarta.persistence</groupId>
 				<artifactId>jakarta.persistence-api</artifactId>
 				<version>${version.jakarta.persistence-api}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>${version.jakartaee}</version>
 				<scope>provided</scope>
 			</dependency>
 

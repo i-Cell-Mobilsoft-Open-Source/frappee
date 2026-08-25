@@ -170,7 +170,9 @@
 		<module>frappee-bom</module>
 		<module>frappee-jpa</module>
 		<module>frappee-hibernate</module>
-	</modules>
+        <module>frappee-model</module>
+        <module>frappee-system</module>
+    </modules>
 
 	<distributionManagement>
 		<snapshotRepository>

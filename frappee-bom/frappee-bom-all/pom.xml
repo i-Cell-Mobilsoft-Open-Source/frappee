@@ -16,6 +16,9 @@
 		<version.hu.icellmobilsoft.coffee>2.11.0</version.hu.icellmobilsoft.coffee>
 		<version.org.hibernate>6.6.1.Final</version.org.hibernate> <!-- Wildfly 34.0.1 -->
 		<version.org.apache.commons.commons-lang3>3.12.0</version.org.apache.commons.commons-lang3>
+		<version.commons-beanutils>1.9.4</version.commons-beanutils>
+		<version.com.google.guava>32.1.1-jre</version.com.google.guava>
+		<version.org.eclipse.microprofile.health>4.0.1</version.org.eclipse.microprofile.health>
 	</properties>
 
 	<dependencyManagement>
@@ -66,6 +69,58 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${version.org.apache.commons.commons-lang3}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${version.commons-beanutils}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${version.com.google.guava}</version>
+				<!-- Starting with https://github.com/google/guava/releases/tag/v27.0 version guava need the real one
+                    dependency com.google.guava:failureaccess, others are optional -->
+				<exclusions>
+					<exclusion>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>animal-sniffer-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.j2objc</groupId>
+						<artifactId>j2objc-annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>jsr305</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.guava</groupId>
+						<artifactId>listenablefuture</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.checkerframework</groupId>
+						<artifactId>checker-qual</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.errorprone</groupId>
+						<artifactId>error_prone_annotations</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.microprofile.health</groupId>
+				<artifactId>microprofile-health-api</artifactId>
+				<version>${version.org.eclipse.microprofile.health}</version>
 			</dependency>
 
 		</dependencies>

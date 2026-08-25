@@ -2,3 +2,4 @@
 
 include::modules/frappee-jpa.adoc[leveloffset=+1]
 include::modules/frappee-hibernate.adoc[leveloffset=+1]
+include::modules/frappee-model.adoc[leveloffset=+1]

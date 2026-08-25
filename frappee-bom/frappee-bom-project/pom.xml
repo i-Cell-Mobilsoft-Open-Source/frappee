@@ -44,6 +44,23 @@
 				<version>${project.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-model-base</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-model-security</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>hu.icellmobilsoft.frappee</groupId>
+				<artifactId>frappee-system-jpa</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

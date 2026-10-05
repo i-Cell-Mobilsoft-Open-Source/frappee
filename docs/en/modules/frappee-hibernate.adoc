@@ -23,6 +23,67 @@ For the fault types, localized error messages can be found in the `i18n.frappee-
 
 NOTE: For example, when using `coffee-module-localization`, you can specify the configuration `coffee.config.resource.bundles=i18n.frappee-messages`
 
+==== Identifier handling [[IdHandling]]
+
+*HibernateBatchService* handles the following entity identifier types:
+
+[%header,cols="30%,35%,35%"]
+|===
+| Identifier type
+| Example
+| Behaviour
+
+| `String`
+a|
+[source,java]
+----
+@Id
+@Column(name = "ID")
+private String id;
+----
+| If the id is `null` on insert, it is generated with `generateId()` (`RandomUtil.generateId()` by default).
+
+| Other basic types (`Long`, `Integer`, `UUID`, ...)
+a|
+[source,java]
+----
+@Id
+@Column(name = "ID")
+private Long id;
+----
+| The id is *not* generated, it must be set before insert. Otherwise the insert fails with `TechnicalException` (`ENTITY_SAVE_FAILED`).
+
+| Composite id with `@EmbeddedId`
+a|
+[source,java]
+----
+@EmbeddedId
+private SampleKey id;
+----
+.2+| Each id part is bound as a separate parameter, with the same type handling as the other fields. Every part must be set before insert.
+
+| Composite id with `@IdClass`
+a|
+[source,java]
+----
+@Entity
+@IdClass(SampleKey.class)
+public class SampleEntity {
+    @Id
+    private String code;
+    @Id
+    private Long seq;
+----
+|===
+
+The keys of the result `Map<String, Status>` (and the elements of the `batchMerge` result list) are the `toString()` values of the ids.
+
+IMPORTANT: For composite ids, the key class must implement a meaningful `toString()`, otherwise the result keys cannot be used to identify the entities.
+
+IMPORTANT: `batchMerge` and `batchMergeNative` decide between insert and update by checking whether the id is `null`. A composite id is never `null`, so these methods do not support composite ids and throw `TechnicalException` (`ENTITY_SAVE_FAILED`). Use `batchInsertNative` and `batchUpdateNative` instead.
+
+NOTE: The native batch methods require a `@Version` field on the entity. It is initialized on insert, and incremented and checked on update.
+
 ==== Type support
 
 *HibernateBatchService* supports operations on the following types with certainty:

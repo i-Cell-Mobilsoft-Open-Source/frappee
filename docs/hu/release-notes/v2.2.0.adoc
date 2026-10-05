@@ -1,0 +1,11 @@
+= v2.2.0
+
+.Változások az előző verzióhoz képest
+
+* A `HibernateBatchService` támogatja a `String`-től eltérő azonosítókat: bármely alap típust (`Long`, `UUID`, ...) és az összetett azonosítókat (`@EmbeddedId`, `@IdClass`).
+** Az insert és delete utasítások minden azonosító oszlopot használnak, nem csak az elsőt.
+** A `batchMerge` és `batchMergeNative` metódusok összetett azonosítójú entitásokra `TechnicalException` hibát dobnak.
+
+== Migráció
+
+* A `HibernateBatchService.getId(Object)` visszatérési típusa `String`-ről `Object`-re változott. Az ezt felüldefiniáló vagy hívó leszármazottakat módosítani kell.

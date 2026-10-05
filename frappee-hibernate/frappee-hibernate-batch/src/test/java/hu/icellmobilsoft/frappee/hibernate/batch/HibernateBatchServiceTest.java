@@ -27,17 +27,26 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.YearMonth;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import jakarta.persistence.EntityManager;
 
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
+import org.hibernate.type.internal.BasicTypeImpl;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.engine.spi.TypedValue;
+import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.type.BasicType;
+import org.hibernate.type.ComponentType;
 import org.hibernate.type.ConvertedBasicType;
 import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.SqlTypes;
+import org.hibernate.type.Type;
 import org.hibernate.type.descriptor.converter.spi.BasicValueConverter;
+import org.hibernate.type.descriptor.java.LongJavaType;
+import org.hibernate.type.descriptor.jdbc.BigIntJdbcType;
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
@@ -64,6 +73,7 @@ import hu.icellmobilsoft.frappee.hibernate.batch.provider.BinaryArgumentsProvide
 import hu.icellmobilsoft.frappee.hibernate.batch.provider.DateArgumentsProvider;
 import hu.icellmobilsoft.frappee.hibernate.batch.provider.TimeArgumentsProvider;
 import hu.icellmobilsoft.frappee.hibernate.batch.provider.TimestampArgumentsProvider;
+import hu.icellmobilsoft.frappee.hibernate.batch.types.StringBasicType;
 import hu.icellmobilsoft.frappee.hibernate.util.HibernateEntityHelper;
 
 /**
@@ -289,6 +299,93 @@ class HibernateBatchServiceTest {
 
         // then
         Mockito.verify(preparedStatement).setString(0, yearMonthString);
+    }
+
+    @Test
+    @Order(14)
+    void getIdPartsBasicTypeTest() {
+        // given
+        BasicType<Long> longBasicType = new BasicTypeImpl<>(LongJavaType.INSTANCE, BigIntJdbcType.INSTANCE);
+        SingleTableEntityPersister persister = Mockito.mock(SingleTableEntityPersister.class);
+        Mockito.doReturn(longBasicType).when(persister).getIdentifierType();
+
+        // when
+        List<TypedValue> idParts = batchService.getIdParts(persister, 42L);
+
+        // then
+        Assertions.assertEquals(List.of(new TypedValue(longBasicType, 42L)), idParts);
+    }
+
+    @Test
+    @Order(15)
+    void getIdPartsComponentTypeTest() {
+        // given
+        Object compositeId = new Object();
+        ComponentType componentType = Mockito.mock(ComponentType.class);
+        Mockito.doReturn(new Type[] { StringBasicType.INSTANCE, TestBasicTypes.LOCAL_DATE_BASIC_TYPE }).when(componentType).getSubtypes();
+        Mockito.doReturn("CODE").when(componentType).getPropertyValue(compositeId, 0);
+        Mockito.doReturn(java.time.LocalDate.of(2026, 1, 2)).when(componentType).getPropertyValue(compositeId, 1);
+        SingleTableEntityPersister persister = Mockito.mock(SingleTableEntityPersister.class);
+        Mockito.doReturn(componentType).when(persister).getIdentifierType();
+
+        // when
+        List<TypedValue> idParts = batchService.getIdParts(persister, compositeId);
+
+        // then
+        Assertions.assertEquals(List.of(new TypedValue(StringBasicType.INSTANCE, "CODE"),
+                new TypedValue(TestBasicTypes.LOCAL_DATE_BASIC_TYPE, java.time.LocalDate.of(2026, 1, 2))), idParts);
+    }
+
+    @Test
+    @Order(16)
+    void validateIdForInsertNullIdTest() {
+        // given
+        SingleTableEntityPersister persister = Mockito.mock(SingleTableEntityPersister.class);
+        Mockito.doReturn("id").when(persister).getIdentifierPropertyName();
+
+        // when
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> batchService.validateIdForInsert(persister, null));
+
+        // then
+        Assertions.assertTrue(exception.getMessage().contains("[id]"), exception.getMessage());
+    }
+
+    @Test
+    @Order(17)
+    void validateIdForInsertCompositeNullPartTest() {
+        // given
+        Object compositeId = new Object();
+        ComponentType componentType = Mockito.mock(ComponentType.class);
+        Mockito.doReturn(new String[] { "code", "seq" }).when(componentType).getPropertyNames();
+        Mockito.doReturn(new Type[] { StringBasicType.INSTANCE, StringBasicType.INSTANCE }).when(componentType).getSubtypes();
+        Mockito.doReturn("CODE").when(componentType).getPropertyValue(compositeId, 0);
+        Mockito.doReturn(null).when(componentType).getPropertyValue(compositeId, 1);
+        SingleTableEntityPersister persister = Mockito.mock(SingleTableEntityPersister.class);
+        Mockito.doReturn(componentType).when(persister).getIdentifierType();
+
+        // when
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> batchService.validateIdForInsert(persister, compositeId));
+
+        // then
+        Assertions.assertTrue(exception.getMessage().contains("[seq]"), exception.getMessage());
+    }
+
+    @Test
+    @Order(18)
+    void setParametersForDeleteTest() throws SQLException {
+        // given
+        Object entity = new Object();
+        SingleTableEntityPersister persister = Mockito.mock(SingleTableEntityPersister.class);
+        Mockito.doReturn(StringBasicType.INSTANCE).when(persister).getIdentifierType();
+        Mockito.doReturn("ENTITY_ID").when(persister).getIdentifier(entity, (SharedSessionContractImplementor) null);
+
+        // when
+        batchService.setParametersForDelete(preparedStatement, persister, entity);
+
+        // then
+        Mockito.verify(preparedStatement).setString(1, "ENTITY_ID");
     }
 
     private void mockDbTimeZone() {

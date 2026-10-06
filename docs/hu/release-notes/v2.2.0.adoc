@@ -8,4 +8,4 @@
 
 == Migráció
 
-* A `HibernateBatchService.getId(Object)` visszatérési típusa `String`-ről `Object`-re változott. Az ezt felüldefiniáló vagy hívó leszármazottakat módosítani kell.
+* Új `HibernateBatchService.getIdObject(Object)` metódus, amely `Object`-ként adja vissza az entitás azonosítóját; a batch metódusok belül ezt használják a `getId(Object)` helyett. Azokban a leszármazottakban, amelyek az azonosító feloldását a `getId(Object)` felüldefiniálásával módosítják, a `getIdObject(Object)` metódust kell felüldefiniálni.

@@ -8,4 +8,4 @@
 
 == Migration
 
-* The return type of `HibernateBatchService.getId(Object)` changed from `String` to `Object`. Subclasses that override or call it must be updated.
+* New `HibernateBatchService.getIdObject(Object)` method returns the entity id as `Object`; the batch methods use it internally instead of `getId(Object)`. Subclasses that override `getId(Object)` to customize id resolution must override `getIdObject(Object)` instead.

@@ -177,7 +177,7 @@ public class HibernateBatchService implements IJpaBatchService {
                 // kulonben ugy fogja erzekelni hogy az adat mar valtozott masik tranzakcioban
                 em.detach(entity);
 
-                Object entityId = getId(entity);
+                Object entityId = getIdObject(entity);
                 if (entityId == null) {
                     Object id = statelessSession.insert(entity);
                     ids.add(id);
@@ -227,8 +227,8 @@ public class HibernateBatchService implements IJpaBatchService {
             return Collections.emptyMap();
         }
         checkCompositeIdNotSupported(entities, "batchMergeNative");
-        List<E> insert = entities.stream().filter(e -> getId(e) == null).collect(Collectors.toList());
-        List<E> update = entities.stream().filter(e -> getId(e) != null).collect(Collectors.toList());
+        List<E> insert = entities.stream().filter(e -> getIdObject(e) == null).collect(Collectors.toList());
+        List<E> update = entities.stream().filter(e -> getIdObject(e) != null).collect(Collectors.toList());
         Map<String, Status> mergeResult = new HashMap<>();
         mergeResult.putAll(batchInsertNative(insert, clazz));
         mergeResult.putAll(batchUpdateNative(update, clazz));
@@ -306,7 +306,7 @@ public class HibernateBatchService implements IJpaBatchService {
                         em.detach(entity);
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(getId(entity));
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -423,7 +423,7 @@ public class HibernateBatchService implements IJpaBatchService {
                         ps.addBatch();
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(getId(entity));
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -526,7 +526,7 @@ public class HibernateBatchService implements IJpaBatchService {
                         ps.addBatch();
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(getId(entity));
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -1137,13 +1137,22 @@ public class HibernateBatchService implements IJpaBatchService {
     }
 
     /**
-     * Entity id visszadasa.
+     * Entity id visszadasa. Ha az entitas id-je nem String, akkor meghivja a <code>toString()</code> metodust.
      *
      * @param entity
      *            - entitas
+     * @return entity id str
+     */
+    protected String getId(Object entity) {
+        return getIdObject(entity).toString();
+    }
+
+    /**
+     * Visszaadja az entitas id objektumat.
+     * @param entity - entitas
      * @return entity id
      */
-    protected Object getId(Object entity) {
+    protected Object getIdObject(Object entity) {
         return em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
     }
 

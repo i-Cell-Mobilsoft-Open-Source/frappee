@@ -216,7 +216,7 @@ public class HibernateBatchService implements IJpaBatchService {
         if (entities.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<Boolean, List<E>> entitiesByIdNullness = entities.stream().collect(Collectors.groupingBy(e -> getId(e) == null));
+        Map<Boolean, List<E>> entitiesByIdNullness = entities.stream().collect(Collectors.partitioningBy(e -> getId(e) == null));
         Map<String, Status> mergeResult = new HashMap<>(calculateHashMapCapacity(entities));
         mergeResult.putAll(batchInsertNative(entitiesByIdNullness.get(true), clazz));
         mergeResult.putAll(batchUpdateNative(entitiesByIdNullness.get(false), clazz));

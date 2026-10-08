@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -109,7 +110,7 @@ public class HibernateBatchService implements IJpaBatchService {
 
     /**
      * Konstruktor.
-     * 
+     *
      * @param em {@link EntityManager}
      * @param hibernateEntityHelper {@link HibernateEntityHelper}
      */
@@ -1139,17 +1140,20 @@ public class HibernateBatchService implements IJpaBatchService {
     /**
      * Entity id visszadasa. Ha az entitas id-je nem String, akkor meghivja a <code>toString()</code> metodust.
      *
-     * @param entity
-     *            - entitas
+     * @param entity entitas
      * @return entity id str
+     * @deprecated A batch metodusok mar nem hivjak, igy a felulirasa nem befolyasolja a mukodest. Helyette a {@link #getIdObject(Object)}
+     * hasznalando.
      */
+    @Deprecated(since = "2.2.0", forRemoval = true)
     protected String getId(Object entity) {
-        return getIdObject(entity).toString();
+        return Objects.toString(getIdObject(entity), null);
     }
 
     /**
      * Visszaadja az entitas id objektumat.
-     * @param entity - entitas
+     *
+     * @param entity entitas
      * @return entity id
      */
     protected Object getIdObject(Object entity) {

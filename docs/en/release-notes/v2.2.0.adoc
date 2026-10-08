@@ -1,0 +1,12 @@
+= v2.2.0
+
+.Changes compared to previous version
+
+* `HibernateBatchService` supports identifiers other than `String`: any basic type (`Long`, `UUID`, ...) and composite ids (`@EmbeddedId`, `@IdClass`).
+** Insert and delete statements now use every identifier column, not only the first one.
+** `batchMerge` and `batchMergeNative` throw `TechnicalException` for entities with composite ids.
+
+== Migration
+
+* New `HibernateBatchService.getIdObject(Object)` method returns the entity id as `Object`; the batch methods use it internally instead of `getId(Object)`. Subclasses that override `getId(Object)` to customize id resolution must override `getIdObject(Object)` instead.
+* `HibernateBatchService.getId(Object)` is deprecated and will be removed in a future major release. The batch methods no longer call it, so overriding it has no effect anymore; use `getIdObject(Object)` instead.

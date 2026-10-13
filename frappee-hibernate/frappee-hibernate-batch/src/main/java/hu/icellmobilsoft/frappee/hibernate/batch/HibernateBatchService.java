@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.engine.spi.TypedValue;
 import org.hibernate.metamodel.spi.MappingMetamodelImplementor;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.hibernate.sql.Delete;
 import org.hibernate.sql.Insert;
 import org.hibernate.sql.Update;
 import org.hibernate.type.BasicType;
+import org.hibernate.type.ComponentType;
 import org.hibernate.type.ConvertedBasicType;
 import org.hibernate.type.CustomType;
 import org.hibernate.type.ManyToOneType;
@@ -74,13 +77,16 @@ import hu.icellmobilsoft.coffee.se.api.exception.TechnicalException;
 import hu.icellmobilsoft.coffee.se.logging.Logger;
 import hu.icellmobilsoft.coffee.se.util.string.RandomUtil;
 import hu.icellmobilsoft.frappee.hibernate.batch.enums.HibernateBatchFaultType;
-import hu.icellmobilsoft.frappee.hibernate.batch.types.StringBasicType;
 import hu.icellmobilsoft.frappee.hibernate.util.HibernateEntityHelper;
 import hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchService;
 import hu.icellmobilsoft.frappee.jpa.batch.enums.Status;
 
 /**
  * Batch mentessekkel foglalkozo osztaly
+ * <p>
+ * Barmilyen alap tipusu (pl. {@link String}, {@link Long}, {@link java.util.UUID}) es osszetett ({@code @EmbeddedId}, {@code @IdClass}) azonositoju
+ * entitasokat kezel. Automatikus id generalas csak {@link String} azonosito eseten tortenik, egyeb azonositokat insert elott ki kell tolteni. A merge
+ * metodusok ({@link #batchMerge(Collection)}, {@link #batchMergeNative(Collection, Class)}) nem tamogatjak az osszetett azonositokat.
  *
  * @author imre.scheffer
  * @author robert.kaplar
@@ -104,7 +110,7 @@ public class HibernateBatchService implements IJpaBatchService {
 
     /**
      * Konstruktor.
-     * 
+     *
      * @param em {@link EntityManager}
      * @param hibernateEntityHelper {@link HibernateEntityHelper}
      */
@@ -134,7 +140,9 @@ public class HibernateBatchService implements IJpaBatchService {
 
     /**
      * Hibernate batch mentes. Ezt akkor erdemes hasznalni, amikor a memoria optimalizalas vegett tul sokat kell menteni, de hibernate-en keresztul.
-     * Mentesi sebessegen nem gyorsit, de a memoria igenyeket jocskan lejjebb viszi
+     * Mentesi sebessegen nem gyorsit, de a memoria igenyeket jocskan lejjebb viszi<br>
+     * Osszetett azonositot ({@code @EmbeddedId}, {@code @IdClass}) nem tamogat, mert az id {@code null} erteke alapjan dont az insert es az update
+     * kozott. Osszetett id eseten {@link #batchInsertNative(Collection, Class)} es {@link #batchUpdateNative(Collection, Class)} hasznalando.
      *
      * @param <E>
      *            - entitas tipusa
@@ -142,7 +150,7 @@ public class HibernateBatchService implements IJpaBatchService {
      *            - merge-olni kivant collection
      * @return merge-elt entitas id-k {@link List}-je
      * @throws BaseException
-     *             exception
+     *             exception, osszetett id eseten is
      */
     @Override
     public <E> List<String> batchMerge(Collection<E> entities) throws BaseException {
@@ -150,6 +158,7 @@ public class HibernateBatchService implements IJpaBatchService {
         if (entities.isEmpty()) {
             return Collections.emptyList();
         }
+        checkCompositeIdNotSupported(entities, "batchMerge");
 
         String entityName = entities.iterator().next().getClass().getSimpleName();
         LOGGER.debug(">> batchMerge: [{0}] list of [{1}] elements", entityName, entities.size());
@@ -163,15 +172,15 @@ public class HibernateBatchService implements IJpaBatchService {
             statelessSession = sessionFactory.openStatelessSession();
 
             LOGGER.debug(">> batchMerge: start");
-            List<String> ids = new ArrayList<>();
+            List<Object> ids = new ArrayList<>();
             for (E entity : entities) {
                 // ezt az entitas ki kell szedni az entityManagerbol,
                 // kulonben ugy fogja erzekelni hogy az adat mar valtozott masik tranzakcioban
                 em.detach(entity);
 
-                String entityId = getId(entity);
+                Object entityId = getIdObject(entity);
                 if (entityId == null) {
-                    String id = (String) statelessSession.insert(entity);
+                    Object id = statelessSession.insert(entity);
                     ids.add(id);
                 } else {
                     statelessSession.update(entity);
@@ -180,7 +189,7 @@ public class HibernateBatchService implements IJpaBatchService {
             }
             LOGGER.debug(">> batchMerge: end");
 
-            return ids;
+            return ids.stream().map(Object::toString).toList();
         } catch (Exception e) {
             String msg = MessageFormat.format("Error in batch merge [{0}]: [{1}]", entityName, e.getLocalizedMessage());
             LOGGER.error(msg, e);
@@ -196,7 +205,9 @@ public class HibernateBatchService implements IJpaBatchService {
     /**
      * Szetvalogatja a beerkezo entitasokat az szerint hogy az id ki van-e toltve vagy sem es aszerint kuldi be a megfelelo metodusokba.<br>
      * Klasszikus PreparedStatement alapon mukododo batch mentes. A SQL osszeallitasara a hibernate dolgai vannak felhasznalva, de a futas mar
-     * klasszikusan folyik. Nagyon gyors a mentes, kicsi memoria hasznalattal
+     * klasszikusan folyik. Nagyon gyors a mentes, kicsi memoria hasznalattal<br>
+     * Osszetett azonositot ({@code @EmbeddedId}, {@code @IdClass}) nem tamogat, mert az id {@code null} erteke alapjan dont az insert es az update
+     * kozott. Osszetett id eseten {@link #batchInsertNative(Collection, Class)} es {@link #batchUpdateNative(Collection, Class)} hasznalando.
      *
      * @param <E>
      *            - entitas tipusa
@@ -206,7 +217,7 @@ public class HibernateBatchService implements IJpaBatchService {
      *            - a collection-ben levo osztalyok tipusa
      * @return {@link Map}, benne az merge-elt entitas id-k es a hozzajuk tartozo feldolgozas sikeressege
      * @throws BaseException
-     *             exception
+     *             exception, osszetett id eseten is
      * @see #batchInsertNative(Collection, Class)
      * @see #batchUpdateNative(Collection, Class)
      */
@@ -216,8 +227,9 @@ public class HibernateBatchService implements IJpaBatchService {
         if (entities.isEmpty()) {
             return Collections.emptyMap();
         }
-        List<E> insert = entities.stream().filter(e -> getId(e) == null).collect(Collectors.toList());
-        List<E> update = entities.stream().filter(e -> getId(e) != null).collect(Collectors.toList());
+        checkCompositeIdNotSupported(entities, "batchMergeNative");
+        List<E> insert = entities.stream().filter(e -> getIdObject(e) == null).collect(Collectors.toList());
+        List<E> update = entities.stream().filter(e -> getIdObject(e) != null).collect(Collectors.toList());
         Map<String, Status> mergeResult = new HashMap<>();
         mergeResult.putAll(batchInsertNative(insert, clazz));
         mergeResult.putAll(batchUpdateNative(update, clazz));
@@ -281,7 +293,7 @@ public class HibernateBatchService implements IJpaBatchService {
                     LOGGER.debug(">> batchMerge: start");
 
                     // temporalis lista, max {batchSize} elemet tartalmaz
-                    List<String> tmpProcessingEntities = new ArrayList<>(batchSize());
+                    List<Object> tmpProcessingEntities = new ArrayList<>(batchSize());
 
                     for (E entity : entities) {
                         handleUpdateAudit(entity);
@@ -295,7 +307,7 @@ public class HibernateBatchService implements IJpaBatchService {
                         em.detach(entity);
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(getId(entity));
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -383,7 +395,11 @@ public class HibernateBatchService implements IJpaBatchService {
 
             Insert insert = new Insert(sfi);
             insert.setTableName(persister.getTableName());
-            insert.addColumn(persister.getRootTableKeyColumnNames()[0]);
+            // id oszlopok
+            for (String idColumnName : persister.getIdentifierColumnNames()) {
+                insert.addColumn(idColumnName);
+            }
+            // tobbi oszlop
             for (String name : entityFieldNames) {
                 insert.addColumns(persister.getPropertyColumnNames(name));
             }
@@ -398,7 +414,7 @@ public class HibernateBatchService implements IJpaBatchService {
                     LOGGER.debug(">> batchInsertNative: start");
 
                     // temporalis lista, max {batchSize} elemet tartalmaz
-                    List<String> tmpProcessingEntities = new ArrayList<>(batchSize());
+                    List<Object> tmpProcessingEntities = new ArrayList<>(batchSize());
 
                     for (E entity : entities) {
                         handleInsertAudit(entity);
@@ -408,7 +424,7 @@ public class HibernateBatchService implements IJpaBatchService {
                         ps.addBatch();
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(getId(entity));
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -494,7 +510,7 @@ public class HibernateBatchService implements IJpaBatchService {
 
             Delete delete = new Delete(sfi);
             delete.setTableName(persister.getTableName());
-            delete.addColumnRestriction(persister.getRootTableKeyColumnNames()[0]);
+            delete.addColumnRestriction(persister.getIdentifierColumnNames());
 
             String sql = delete.toStatementString();
             LOGGER.debug("Running delete:\n[{0}]", sql);
@@ -504,16 +520,14 @@ public class HibernateBatchService implements IJpaBatchService {
                     int i = 1;
 
                     // temporalis lista, max {batchSize} elemet tartalmaz
-                    List<String> tmpProcessingEntities = new ArrayList<>(batchSize());
+                    List<Object> tmpProcessingEntities = new ArrayList<>(batchSize());
 
                     for (E entity : entities) {
-
-                        String entityId = getId(entity);
-                        ps.setString(1, entityId);
+                        setParametersForDelete(ps, persister, entity);
                         ps.addBatch();
 
                         // mivel {batchSize} csomagokban hajtjuk vegre a muveletet, meg kell jelolnunk azokat az entitasokat amiken vegigmegyunk
-                        tmpProcessingEntities.add(entityId);
+                        tmpProcessingEntities.add(getIdObject(entity));
 
                         if (i % batchSize() == 0) {
                             executeBatch(result, ps, tmpProcessingEntities);
@@ -576,7 +590,11 @@ public class HibernateBatchService implements IJpaBatchService {
             i++;
         }
         // where
-        ps.setObject(i++, persister.getIdentifier(entity, (SharedSessionContractImplementor) null));
+        Object entityId = persister.getIdentifier(entity, (SharedSessionContractImplementor) null);
+        for (TypedValue idPart : getIdParts(persister, entityId)) {
+            setPsObject(ps, i, idPart.getType(), idPart.getValue());
+            i++;
+        }
         ps.setObject(i, oldVersion);
     }
 
@@ -600,14 +618,19 @@ public class HibernateBatchService implements IJpaBatchService {
             throws SQLException {
         int i = 1;
 
-        // elso a PK
-        String entityId = (String) persister.getIdentifier(entity, (SharedSessionContractImplementor) null);
-        if (entityId == null) {
+        // elso a PK, String id eseten generalunk ha nincs kitoltve
+        Type idType = persister.getIdentifierType();
+        Object entityId = persister.getIdentifier(entity, (SharedSessionContractImplementor) null);
+        if (entityId == null && idType instanceof BasicType<?> basicType && String.class.isAssignableFrom(basicType.getReturnedClass())) {
             entityId = generateId();
             persister.setIdentifier(entity, entityId, (SharedSessionContractImplementor) null);
         }
+        validateIdForInsert(persister, entityId);
 
-        setPsObject(ps, i++, StringBasicType.INSTANCE, entityId);
+        for (TypedValue idPart : getIdParts(persister, entityId)) {
+            setPsObject(ps, i, idPart.getType(), idPart.getValue());
+            i++;
+        }
 
         // Init version
         Object version = persister.getVersionJavaType().seed(null, null, null, null);
@@ -619,6 +642,79 @@ public class HibernateBatchService implements IJpaBatchService {
             Type type = persister.getPropertyType(name);
             setPsObject(ps, i, type, value);
             i++;
+        }
+    }
+
+    /**
+     * Parameterek beallitasa a delete szamara.
+     *
+     * @param <E>
+     *            - entitas tipusa
+     * @param ps
+     *            - beallitando preparedStatement
+     * @param persister
+     *            - persister
+     * @param entity
+     *            - torolni kivant entitas
+     * @throws SQLException
+     *             exception
+     */
+    protected <E> void setParametersForDelete(PreparedStatement ps, SingleTableEntityPersister persister, E entity) throws SQLException {
+        int i = 1;
+
+        Object entityId = persister.getIdentifier(entity, (SharedSessionContractImplementor) null);
+        for (TypedValue idPart : getIdParts(persister, entityId)) {
+            setPsObject(ps, i, idPart.getType(), idPart.getValue());
+            i++;
+        }
+    }
+
+    /**
+     * Id reszek visszaadasa tipussal egyutt, a persister id oszlopainak sorrendjeben. Alap tipusu id eseten egy elemu a lista, osszetett id
+     * ({@code @EmbeddedId}, {@code @IdClass}) eseten minden id resz kulon elem.
+     *
+     * @param persister
+     *            - persister
+     * @param entityId
+     *            - entitas id
+     * @return id reszek {@link List}-je
+     */
+    protected List<TypedValue> getIdParts(SingleTableEntityPersister persister, Object entityId) {
+        Type idType = persister.getIdentifierType();
+        if (idType instanceof ComponentType componentType) {
+            Type[] subtypes = componentType.getSubtypes();
+            List<TypedValue> idParts = new ArrayList<>(subtypes.length);
+            for (int n = 0; n < subtypes.length; n++) {
+                idParts.add(new TypedValue(subtypes[n], componentType.getPropertyValue(entityId, n)));
+            }
+            return idParts;
+        }
+        return List.of(new TypedValue(idType, entityId));
+    }
+
+    /**
+     * Insert elotti ellenorzes, hogy az id (osszetett id eseten minden resze) ki van-e toltve.
+     *
+     * @param persister
+     *            - persister
+     * @param entityId
+     *            - entitas id
+     * @throws IllegalArgumentException
+     *             ha az id vagy barmely resze null
+     */
+    protected void validateIdForInsert(SingleTableEntityPersister persister, Object entityId) {
+        if (entityId == null) {
+            throw new IllegalArgumentException(
+                    MessageFormat.format("Id field [{0}] value cannot be null, only String ids are generated", persister.getIdentifierPropertyName()));
+        }
+        if (persister.getIdentifierType() instanceof ComponentType componentType) {
+            String[] propertyNames = componentType.getPropertyNames();
+            List<TypedValue> idParts = getIdParts(persister, entityId);
+            for (int n = 0; n < propertyNames.length; n++) {
+                if (idParts.get(n).getValue() == null) {
+                    throw new IllegalArgumentException(MessageFormat.format("Id field [{0}] value cannot be null", propertyNames[n]));
+                }
+            }
         }
     }
 
@@ -1042,14 +1138,26 @@ public class HibernateBatchService implements IJpaBatchService {
     }
 
     /**
-     * Entity id visszadasa.
+     * Entity id visszadasa. Ha az entitas id-je nem String, akkor meghivja a <code>toString()</code> metodust.
      *
-     * @param entity
-     *            - entitas
+     * @param entity entitas
+     * @return entity id str
+     * @deprecated A batch metodusok mar nem hivjak, igy a felulirasa nem befolyasolja a mukodest. Helyette a {@link #getIdObject(Object)}
+     * hasznalando.
+     */
+    @Deprecated(since = "2.2.0", forRemoval = true)
+    protected String getId(Object entity) {
+        return Objects.toString(getIdObject(entity), null);
+    }
+
+    /**
+     * Visszaadja az entitas id objektumat.
+     *
+     * @param entity entitas
      * @return entity id
      */
-    protected String getId(Object entity) {
-        return (String) em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+    protected Object getIdObject(Object entity) {
+        return em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
     }
 
     /**
@@ -1072,12 +1180,12 @@ public class HibernateBatchService implements IJpaBatchService {
         return OffsetDateTime.now(zoneId).getOffset();
     }
 
-    private void executeBatch(Map<String, Status> result, PreparedStatement ps, List<String> tmpProcessedEntities) throws SQLException {
+    private void executeBatch(Map<String, Status> result, PreparedStatement ps, List<Object> tmpProcessedEntities) throws SQLException {
         int[] executeBatchResult = ps.executeBatch();
         addBatchResult(result, tmpProcessedEntities, executeBatchResult);
     }
 
-    private void addBatchResult(Map<String, Status> result, List<String> entityIds, int[] batchResult) {
+    private void addBatchResult(Map<String, Status> result, List<Object> entityIds, int[] batchResult) {
         if (entityIds == null || entityIds.isEmpty()) {
             return;
         } else if (entityIds.size() < batchResult.length) {
@@ -1094,7 +1202,7 @@ public class HibernateBatchService implements IJpaBatchService {
                 // limittel fut), nem tudjuk mi lett a hiányzó rekorddal, UNKNOWN státuszt jelölünk
                 status = Status.UNKNOWN;
             }
-            result.put(entityIds.get(i), status);
+            result.put(String.valueOf(entityIds.get(i)), status);
         }
     }
 
@@ -1112,6 +1220,19 @@ public class HibernateBatchService implements IJpaBatchService {
             default:
                 return Status.UNKNOWN;
             }
+        }
+    }
+
+    private <E> void checkCompositeIdNotSupported(Collection<E> entities, String methodName) throws BaseException {
+        Class<?> entityClass = entities.iterator().next().getClass();
+        SessionFactoryImplementor sfi = (SessionFactoryImplementor) em.unwrap(Session.class).getSessionFactory();
+        Type idType = sfi.getMappingMetamodel().getEntityDescriptor(entityClass).getIdentifierType();
+        if (idType instanceof ComponentType) {
+            String msg = MessageFormat.format(
+                    "Batch method [{0}] does not support composite ids (entity: [{1}]), use batchInsertNative/batchUpdateNative instead!", methodName,
+                    entityClass.getSimpleName());
+            LOGGER.error(msg);
+            throw new TechnicalException(HibernateBatchFaultType.ENTITY_SAVE_FAILED, msg);
         }
     }
 }

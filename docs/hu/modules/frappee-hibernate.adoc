@@ -15,12 +15,73 @@ A *HibernateBatchService* a `hu.icellmobilsoft.frappee.jpa.batch.IJpaBatchServic
 implementációsja. Tömeges adatbázis műveletek (insert, update, delete) csoportosan való végrehajtására szolgál. +
 Főként *PreparedStatement* alapon működő batch műveleteket tartalmaz, amelyekben az SQL összeállítást a *Hibernate* támogatásával végezzük el.
 
-==== Hibakezelés [[HibernateBatchServiceExceptionHandling]]}
+==== Hibakezelés [[HibernateBatchServiceExceptionHandling]]
 
 Hiba esetén a *HibernateBatchService* a `TechnicalException`-t dob, amely fault-typeként a `HibernateBatchFaultType` enum értékeit adhatja.
 A fault type-okhoz a `frappee-hibernate-batch` modulban az `i18n.frappee-messages` resource bundle-ben találhatóak a nyelvesített hibaüzenetek, ezeket lehet integrálni a használt lokalizációs megoldásba.
 
 NOTE: Például `coffee-module-localization` használata esetén a `coffee.config.resource.bundles=i18n.frappee-messages` konfiguráció megadásával
+
+==== Azonosító kezelés [[IdHandling]]
+
+A *HibernateBatchService* a következő entitás azonosító típusokat kezeli:
+
+[%header,cols="30%,35%,35%"]
+|===
+| Azonosító típus
+| Példa
+| Működés
+
+| `String`
+a|
+[source,java]
+----
+@Id
+@Column(name = "ID")
+private String id;
+----
+| Ha beszúráskor az azonosító `null`, a `generateId()` metódussal generálódik (alapértelmezetten `RandomUtil.generateId()`).
+
+| Egyéb alap típusok (`Long`, `Integer`, `UUID`, ...)
+a|
+[source,java]
+----
+@Id
+@Column(name = "ID")
+private Long id;
+----
+| Az azonosító *nem* generálódik, beszúrás előtt ki kell tölteni. Ellenkező esetben a beszúrás `TechnicalException` (`ENTITY_SAVE_FAILED`) hibával elszáll.
+
+| Összetett azonosító `@EmbeddedId`-vel
+a|
+[source,java]
+----
+@EmbeddedId
+private SampleKey id;
+----
+.2+| Az azonosító minden része külön paraméterként kerül beállításra, a többi mezővel azonos típuskezeléssel. Beszúrás előtt minden részt ki kell tölteni.
+
+| Összetett azonosító `@IdClass`-szal
+a|
+[source,java]
+----
+@Entity
+@IdClass(SampleKey.class)
+public class SampleEntity {
+    @Id
+    private String code;
+    @Id
+    private Long seq;
+----
+|===
+
+Az eredményként visszaadott `Map<String, Status>` kulcsai (illetve a `batchMerge` eredménylistájának elemei) az azonosítók `toString()` értékei.
+
+IMPORTANT: Összetett azonosító esetén a kulcs osztálynak értelmes `toString()` implementációval kell rendelkeznie, különben az eredmény kulcsai alapján nem azonosíthatók az entitások.
+
+IMPORTANT: A `batchMerge` és `batchMergeNative` metódusok az azonosító `null` értéke alapján döntenek a beszúrás és a módosítás között. Összetett azonosító sosem `null`, ezért ezek a metódusok nem támogatják az összetett azonosítókat, és `TechnicalException` (`ENTITY_SAVE_FAILED`) hibát dobnak. Helyettük a `batchInsertNative` és `batchUpdateNative` metódusokat kell használni.
+
+NOTE: A natív batch metódusok megkövetelik, hogy az entitásnak legyen `@Version` mezője. Beszúráskor inicializálódik, módosításkor növelésre és ellenőrzésre kerül.
 
 ==== Típus támogatás
 

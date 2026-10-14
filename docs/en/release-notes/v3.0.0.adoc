@@ -1,0 +1,9 @@
+= v3.0.0
+
+.Changes compared to the previous version
+
+* Jakarta persistence 3.2.0 and Hibernate 7 support
+
+== Migration
+
+* Follow the Hibernate https://hibernate.org/orm/documentation/migrate/[migration guide]

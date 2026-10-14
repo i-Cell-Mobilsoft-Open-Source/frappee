@@ -172,7 +172,7 @@ public class HibernateBatchService implements IJpaBatchService {
             statelessSession = sessionFactory.openStatelessSession();
 
             LOGGER.debug(">> batchMerge: start");
-            List<Object> ids = new ArrayList<>();
+            List<Object> ids = new ArrayList<>(entities.size());
             for (E entity : entities) {
                 // ezt az entitas ki kell szedni az entityManagerbol,
                 // kulonben ugy fogja erzekelni hogy az adat mar valtozott masik tranzakcioban
@@ -228,11 +228,10 @@ public class HibernateBatchService implements IJpaBatchService {
             return Collections.emptyMap();
         }
         checkCompositeIdNotSupported(entities, "batchMergeNative");
-        List<E> insert = entities.stream().filter(e -> getIdObject(e) == null).collect(Collectors.toList());
-        List<E> update = entities.stream().filter(e -> getIdObject(e) != null).collect(Collectors.toList());
-        Map<String, Status> mergeResult = new HashMap<>();
-        mergeResult.putAll(batchInsertNative(insert, clazz));
-        mergeResult.putAll(batchUpdateNative(update, clazz));
+        Map<Boolean, List<E>> entitiesByIdNullness = entities.stream().collect(Collectors.partitioningBy(e -> getIdObject(e) == null));
+        Map<String, Status> mergeResult = new HashMap<>(calculateHashMapCapacity(entities));
+        mergeResult.putAll(batchInsertNative(entitiesByIdNullness.get(true), clazz));
+        mergeResult.putAll(batchUpdateNative(entitiesByIdNullness.get(false), clazz));
         return mergeResult;
     }
 
@@ -259,7 +258,7 @@ public class HibernateBatchService implements IJpaBatchService {
         String entityName = entities.iterator().next().getClass().getSimpleName();
         LOGGER.debug(">> batchMerge: [{0}] list of [{1}] elements", entityName, entities.size());
 
-        Map<String, Status> result = new HashMap<>();
+        Map<String, Status> result = new HashMap<>(calculateHashMapCapacity(entities));
         try {
             // ha nincs tranzakció nem szabad hogy autoCommit történjen az executeBatch-ben
             em.joinTransaction();
@@ -381,7 +380,7 @@ public class HibernateBatchService implements IJpaBatchService {
         String entityName = entities.iterator().next().getClass().getSimpleName();
         LOGGER.debug(">> batchInsertNative: [{0}] list of [{1}] elements", entityName, entities.size());
 
-        Map<String, Status> result = new HashMap<>();
+        Map<String, Status> result = new HashMap<>(calculateHashMapCapacity(entities));
         try {
             // ha nincs tranzakció nem szabad hogy autoCommit történjen az executeBatch-ben
             em.joinTransaction();
@@ -497,7 +496,7 @@ public class HibernateBatchService implements IJpaBatchService {
         String entityName = entities.iterator().next().getClass().getSimpleName();
         LOGGER.debug(">> batchDeleteNative: [{0}] list of [{1}] elements", entityName, entities.size());
 
-        Map<String, Status> result = new HashMap<>();
+        Map<String, Status> result = new HashMap<>(calculateHashMapCapacity(entities));
         try {
             // ha nincs tranzakció nem szabad hogy autoCommit történjen az executeBatch-ben
             em.joinTransaction();
@@ -580,7 +579,7 @@ public class HibernateBatchService implements IJpaBatchService {
         // Update version
         Object oldVersion = persister.getVersion(entity);
         Object newVersion = persister.getVersionJavaType().next(oldVersion, null, null, null, null);
-        persister.setPropertyValue(entity, persister.getVersionProperty(), newVersion);
+        persister.setPropertyValue(entity, persister.getVersionPropertyIndex(), newVersion);
 
         for (String name : entityFieldNames) {
             int index = persister.getPropertyIndex(name);
@@ -634,7 +633,7 @@ public class HibernateBatchService implements IJpaBatchService {
 
         // Init version
         Object version = persister.getVersionJavaType().seed(null, null, null, null);
-        persister.setPropertyValue(entity, persister.getVersionProperty(), version);
+        persister.setPropertyValue(entity, persister.getVersionPropertyIndex(), version);
 
         for (String name : entityFieldNames) {
             int index = persister.getPropertyIndex(name);
@@ -1234,5 +1233,9 @@ public class HibernateBatchService implements IJpaBatchService {
             LOGGER.error(msg);
             throw new TechnicalException(HibernateBatchFaultType.ENTITY_SAVE_FAILED, msg);
         }
+    }
+
+    private <E> int calculateHashMapCapacity(Collection<E> entities) {
+        return (int) Math.ceil(entities.size() / 0.75);
     }
 }

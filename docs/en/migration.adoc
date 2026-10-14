@@ -2,6 +2,7 @@
 
 = Migration descriptions
 
+include::release-notes/v3.0.0.adoc[leveloffset=+1]
 include::release-notes/v2.2.0.adoc[leveloffset=+1]
 include::release-notes/v2.1.0.adoc[leveloffset=+1]
 include::release-notes/v2.0.0.adoc[leveloffset=+1]

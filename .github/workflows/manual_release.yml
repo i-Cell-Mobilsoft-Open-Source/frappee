@@ -25,6 +25,10 @@ jobs:
     if: contains('["rombow","czenczl","petrenyi-mark","speter555","bucherarnold"]', github.actor)
 
     steps:
+      - name: Set up Maven 3.9.16
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.16
       - name: Release
         uses: speter555/gh-action-mvn-release-main@v0.32.0
         with:

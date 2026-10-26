@@ -72,7 +72,7 @@ public class TestBasicTypes {
     /**
      * Basic type constant for wrapping {@link JdbcDateJavaType} and {@link DateJdbcType}.
      */
-    public static final BasicType<Date> JDBC_DATE_BASIC_TYPE = createDateBasicType(JdbcDateJavaType.INSTANCE);
+    public static final BasicType<java.sql.Date> JDBC_DATE_BASIC_TYPE = createDateBasicType(JdbcDateJavaType.INSTANCE);
 
     /**
      * Basic type constant for wrapping {@link LocalDateJavaType} and {@link DateJdbcType}.
@@ -94,7 +94,7 @@ public class TestBasicTypes {
     /**
      * Basic type constant for wrapping {@link JdbcTimeJavaType} and {@link TimeJdbcType}.
      */
-    public static final BasicType<Date> JDBC_TIME_BASIC_TYPE = createTimeBasicType(JdbcTimeJavaType.INSTANCE);
+    public static final BasicType<java.sql.Time> JDBC_TIME_BASIC_TYPE = createTimeBasicType(JdbcTimeJavaType.INSTANCE);
 
     /**
      * Basic type constant for wrapping {@link LocalTimeJavaType} and {@link TimeJdbcType}.
@@ -121,7 +121,7 @@ public class TestBasicTypes {
     /**
      * Basic type constant for wrapping {@link JdbcTimestampJavaType} and {@link TimestampJdbcType}.
      */
-    public static final BasicType<Date> JDBC_TIMESTAMP_BASIC_TYPE = createTimestampBasicType(JdbcTimestampJavaType.INSTANCE);
+    public static final BasicType<java.sql.Timestamp> JDBC_TIMESTAMP_BASIC_TYPE = createTimestampBasicType(JdbcTimestampJavaType.INSTANCE);
 
     /**
      * Basic type constant for wrapping {@link LocalDateTimeJavaType} and {@link TimestampJdbcType}.

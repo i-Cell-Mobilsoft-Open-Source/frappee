@@ -1,0 +1,9 @@
+= v3.0.0
+
+.Változások az előző verzióhoz képest
+
+* Jakarta persistence 3.2.0 és Hibernate 7 support
+
+== Migráció
+
+* Hibernate https://hibernate.org/orm/documentation/migrate/[migration guide] lekövetése
